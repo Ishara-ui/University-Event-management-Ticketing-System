@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
+import { canManageEvents as roleAllowsManaging } from '../utils/roles';
 
 const QRScanner = () => {
 	const [ticketCode, setTicketCode] = useState('');
@@ -9,7 +10,7 @@ const QRScanner = () => {
 	const [submitting, setSubmitting] = useState(false);
 	const token = localStorage.getItem('token');
 	const user = JSON.parse(localStorage.getItem('user') || '{}');
-	const canCheckIn = ['Club Admin', 'Super Admin'].includes(user.role);
+	const canCheckIn = roleAllowsManaging(user.role);
 
 	const handleSubmit = async (event) => {
 		event.preventDefault();

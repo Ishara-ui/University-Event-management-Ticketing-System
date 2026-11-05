@@ -40,7 +40,8 @@ const Register = () => {
           </div>
           <div className="form-group">
             <label>Password</label>
-            <input type="password" name="password" onChange={handleChange} required />
+            <input type="password" name="password" onChange={handleChange} required minLength={8} />
+            <small>Password must be at least 8 characters.</small>
           </div>
           <div className="form-group">
             <label>Faculty</label>

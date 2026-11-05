@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Link, useSearchParams } from 'react-router-dom';
+import { canManageEvents as roleAllowsManaging, canReviewPayments as roleAllowsReviewing } from '../utils/roles';
 
 const AttendanceList = () => {
 	const [searchParams, setSearchParams] = useSearchParams();
@@ -11,7 +12,7 @@ const AttendanceList = () => {
 	const [loading, setLoading] = useState(true);
 	const token = localStorage.getItem('token');
 	const user = JSON.parse(localStorage.getItem('user') || '{}');
-	const canManage = ['Club Admin', 'Super Admin'].includes(user.role);
+	const canManage = roleAllowsManaging(user.role);
 	const selectedEventId = searchParams.get('eventId') || '';
 	const visibleTickets = tickets.filter((ticket) => {
 		const searchText = search.trim().toLowerCase();

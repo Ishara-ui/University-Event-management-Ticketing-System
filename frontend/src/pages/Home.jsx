@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
+import { canManageEvents as roleAllowsManaging } from '../utils/roles';
 
 const categories = [
   { label: 'All events', value: '' },
@@ -35,7 +36,7 @@ const Home = () => {
   } catch {
     user = {};
   }
-  const canCreateEvents = ['Club Admin', 'Super Admin'].includes(user.role);
+  const canCreateEvents = roleAllowsManaging(user.role);
   const [events, setEvents] = useState([]);
   const [metrics, setMetrics] = useState(null);
   const [search, setSearch] = useState('');

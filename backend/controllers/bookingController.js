@@ -15,6 +15,11 @@ const bookTicket = async (req, res) => {
 
     if (!eventId) return res.status(400).json({ message: 'Event ID is required.' });
 
+    const existingTicket = await Ticket.findOne({ userId, eventId, status: { $ne: 'Cancelled' } });
+    if (existingTicket) {
+      return res.status(409).json({ message: 'You have already booked a ticket for this event.' });
+    }
+
     const inventoryQuery = {
       _id: eventId,
       status: { $nin: ['Draft', 'Cancelled'] },

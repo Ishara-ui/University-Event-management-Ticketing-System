@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
+import { canReviewPayments as roleAllowsReviewing } from '../utils/roles';
 
 const PaymentManager = () => {
   const [payments, setPayments] = useState([]);
@@ -9,7 +10,7 @@ const PaymentManager = () => {
   const [reviewing, setReviewing] = useState('');
   const token = localStorage.getItem('token');
   const user = JSON.parse(localStorage.getItem('user') || '{}');
-  const canReview = ['Finance Officer', 'Super Admin'].includes(user.role);
+  const canReview = roleAllowsReviewing(user.role);
 
   const fetchPayments = useCallback(async () => {
     setLoading(true);

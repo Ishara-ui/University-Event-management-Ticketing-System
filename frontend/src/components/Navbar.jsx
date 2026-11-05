@@ -1,11 +1,12 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { canManageEvents as roleAllowsManaging, canReviewPayments as roleAllowsReviewing } from '../utils/roles';
 
 const Navbar = () => {
   const token = localStorage.getItem('token');
   const user = JSON.parse(localStorage.getItem('user') || '{}');
-  const canManageEvents = ['Club Admin', 'Super Admin'].includes(user.role);
-  const canReviewPayments = ['Finance Officer', 'Super Admin'].includes(user.role);
+  const canManageEvents = roleAllowsManaging(user.role);
+  const canReviewPayments = roleAllowsReviewing(user.role);
 
   const handleLogout = () => {
     localStorage.removeItem('token');

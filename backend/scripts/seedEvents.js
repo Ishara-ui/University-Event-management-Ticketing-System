@@ -94,6 +94,33 @@ const sampleEvents = [
     ticketLimit: 140,
     availableTickets: 140,
     ticketTiers: [{ name: 'Conference Delegate', price: 750, capacity: 140, availableTickets: 140 }]
+  },
+  {
+    seedKey: 'demo-cultural-night',
+    title: '[DEMO] University Cultural Night 2026',
+    category: 'Cultural',
+    date: futureDate(65, 18),
+    venue: 'Open Air Theatre',
+    description: 'A sample grand cultural evening with traditional dance, music performances, and drama from student societies.',
+    price: 1000,
+    ticketLimit: 300,
+    availableTickets: 300,
+    ticketTiers: [
+      { name: 'Regular Seating', price: 1000, capacity: 220, availableTickets: 220 },
+      { name: 'VIP Seating', price: 2500, capacity: 80, availableTickets: 80 }
+    ]
+  },
+  {
+    seedKey: 'demo-career-fair',
+    title: '[DEMO] SEUSL Career Fair and Industry Day',
+    category: 'Academic',
+    date: futureDate(72, 9),
+    venue: 'University Gymnasium Complex',
+    description: 'A sample career fair connecting final-year students with industry partners, CV clinics, and on-the-spot interviews.',
+    price: 0,
+    ticketLimit: 400,
+    availableTickets: 400,
+    ticketTiers: [{ name: 'Student Entry', price: 0, capacity: 400, availableTickets: 400 }]
   }
 ];
 
@@ -101,11 +128,27 @@ const seed = async () => {
   await connectDB();
 
   try {
-    const results = await Promise.all(sampleEvents.map((event) => (
-      Event.updateOne({ seedKey: event.seedKey }, { $setOnInsert: event }, { upsert: true })
-    )));
-    const inserted = results.reduce((total, result) => total + result.upsertedCount, 0);
-    console.log(`Seed complete: ${inserted} new demo events added; existing demo events were left unchanged.`);
+    
+    const results = await Promise.all(sampleEvents.map(async (event) => {
+      const existing = await Event.findOne({ seedKey: event.seedKey });
+      if (existing) {
+       
+        existing.ticketTiers = existing.ticketTiers.map((current, index) => ({
+          name: current.name,
+          price: current.price,
+          capacity: current.capacity,
+          availableTickets: current.availableTickets
+        }));
+        existing.date = event.date;
+        await existing.save();
+        return null;
+      }
+      const { date, ...rest } = event;
+      const created = await Event.create({ ...rest, date });
+      return created;
+    }));
+    const inserted = results.filter(Boolean).length;
+    console.log(`Seed complete: ${inserted} new demo events added; ${results.length - inserted} existing demo events refreshed (dates reset, tier IDs ensured).`);
   } finally {
     await mongoose.disconnect();
   }

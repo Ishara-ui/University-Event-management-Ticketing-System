@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
+import { canManageEvents as roleAllowsManaging } from '../utils/roles';
 
 const EventList = () => {
   const [events, setEvents] = useState([]);
@@ -12,7 +13,7 @@ const EventList = () => {
   const [reloadKey, setReloadKey] = useState(0);
   const hasFilters = Boolean(search.trim() || category || date);
   const user = JSON.parse(localStorage.getItem('user') || '{}');
-  const canManageEvents = ['Club Admin', 'Super Admin'].includes(user.role);
+  const canManageEvents = roleAllowsManaging(user.role);
 
   const getPriceLabel = (event) => {
     const prices = event.ticketTiers?.length

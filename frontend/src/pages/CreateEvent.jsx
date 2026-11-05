@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { Link, useNavigate } from 'react-router-dom';
+import { canManageEvents as roleAllowsManaging } from '../utils/roles';
 
 const CreateEvent = () => {
   const navigate = useNavigate();
   const token = localStorage.getItem('token');
   const user = JSON.parse(localStorage.getItem('user') || '{}');
-  const canManage = ['Club Admin', 'Super Admin'].includes(user.role);
+  const canManage = roleAllowsManaging(user.role);
   const [formData, setFormData] = useState({
     title: '',
     description: '',
@@ -63,8 +64,8 @@ const CreateEvent = () => {
         <section className="event-empty panel create-access-panel">
           <h2>{token ? 'Organizer access required' : 'Sign in to continue'}</h2>
           <p>{token
-            ? `Your account is currently ${user.role || 'Student'}. Club Admins and Super Admins can publish events. Request organizer access from the university team.`
-            : 'Sign in with a Club Admin or Super Admin account to publish campus events.'}</p>
+            ? `Your account is currently ${user.role || 'Student'}. Event organizers and administrators can publish events. Request organizer access from the university team.`
+            : 'Sign in with an organizer or administrator account to publish campus events.'}</p>
           <div className="create-access-actions">
             {token ? (
               <Link to="/contact?subject=Organizer%20Account%20Request" className="btn primary-btn">Request organizer access</Link>

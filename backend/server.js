@@ -33,6 +33,10 @@ app.use('/api/notifications', notificationRoutes);
 app.use('/api/contact', contactRoutes);
 app.use('/api/organizer-requests', organizerRequestRoutes);
 
+app.use('/api', (req, res) => {
+  res.status(404).json({ message: `API route not found: ${req.method} ${req.originalUrl}` });
+});
+
 app.get('/', (req, res) => {
   res.json({ message: 'University Event Management API is running.' });
 });

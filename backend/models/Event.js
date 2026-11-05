@@ -1,6 +1,9 @@
 const mongoose = require('mongoose');
 
+const { Types } = require('mongoose');
+
 const ticketTierSchema = new mongoose.Schema({
+  _id: { type: mongoose.Schema.Types.ObjectId, default: () => new Types.ObjectId() },
   name: { type: String, required: true, trim: true },
   price: { type: Number, required: true, min: 0 },
   capacity: { type: Number, required: true, min: 1 },

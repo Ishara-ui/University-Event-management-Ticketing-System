@@ -552,6 +552,12 @@ textarea {
   margin-bottom: 24px;
 }
 
+.page-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
 .eyebrow {
   display: inline-block;
   margin-bottom: 8px;

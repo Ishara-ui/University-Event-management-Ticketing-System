@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
 import StudentDashboard from './StudentDashboard';
+import { canManageEvents as roleAllowsManaging, canReviewPayments as roleAllowsReviewing, isPlatformAdmin } from '../utils/roles';
 
 const Dashboard = () => {
   const [dashboard, setDashboard] = useState(null);
@@ -9,9 +10,9 @@ const Dashboard = () => {
   const [error, setError] = useState('');
   const token = localStorage.getItem('token');
   const user = JSON.parse(localStorage.getItem('user') || '{}');
-  const canManageEvents = ['Club Admin', 'Super Admin'].includes(user.role);
-  const canReviewPayments = ['Finance Officer', 'Super Admin'].includes(user.role);
-  const canViewStaffDashboard = canManageEvents || user.role === 'Finance Officer';
+  const canManageEvents = roleAllowsManaging(user.role);
+  const canReviewPayments = roleAllowsReviewing(user.role);
+  const canViewStaffDashboard = canManageEvents || canReviewPayments;
 
   useEffect(() => {
     const controller = new AbortController();
@@ -55,7 +56,7 @@ const Dashboard = () => {
 
   if (user.role === 'Student') return <StudentDashboard user={user} />;
 
-  if (!canManageEvents && user.role !== 'Finance Officer') {
+  if (!canManageEvents && !canReviewPayments) {
     return <div className="container"><section className="event-empty panel"><h2>Administrator access required</h2><p>Dashboard statistics are available to event managers and finance officers.</p></section></div>;
   }
 
@@ -76,6 +77,7 @@ const Dashboard = () => {
           <h1>Event Dashboard</h1>
         </div>
         {canManageEvents && <Link to="/create-event" className="btn primary-btn">+ New Event</Link>}
+        {(isPlatformAdmin(user.role) || user.role === 'Event Manager') && <Link to="/admin" className="btn secondary-btn">Admin Panel</Link>}
       </div>
 
       {loading && <p className="event-feedback">Loading dashboard...</p>}
